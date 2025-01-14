@@ -5,8 +5,8 @@
 #include <ESPmDNS.h>
 
 // LED Configuration
-#define LED_PIN     D0
-#define LED_COUNT   72
+#define LED_PIN     D10
+#define LED_COUNT   16
 #define CHIPSET     WS2812B
 #define COLOR_ORDER GRB
 
@@ -72,6 +72,7 @@ void setup() {
     startControlServer();
   } else {
     // Failed to connect to Wi-Fi, start in Access Point mode
+    preferences.clear();
     startAPMode();
   }
 }
@@ -101,23 +102,6 @@ void rainbow() {
     leds[i] = CHSV(hue + (direction ? i : -i) * 10, 255, 255);
   }
   hue++;
-}
-
-void firefly() {
-  static byte fireflyBrightness[LED_COUNT] = {0};
-  static float pulseCycle[LED_COUNT] = {0};
-  static bool isActive[LED_COUNT] = {0};
-  for (int i = 0; i < LED_COUNT; i++) {
-    if (fireflyBrightness[i] > 0) {
-      pulseCycle[i] += 0.1;
-      float pulseValue = sin(pulseCycle[i]) * 0.5 + 0.5;
-      leds[i] = CHSV(64, 255, fireflyBrightness[i] * pulseValue);
-      fireflyBrightness[i] -= (fireflyBrightness[i] > 5) ? 1 : 0;
-    } else if (random(100) < 5) {
-      fireflyBrightness[i] = 255;
-      pulseCycle[i] = 0;
-    }
-  }
 }
 
 void water() {
@@ -171,18 +155,15 @@ void loop() {
       rainbow();
       break;
     case 2:
-      firefly();
-      break;
-    case 3:
       water();
       break;
-    case 4:
+    case 3:
       matrix();
       break;
-    case 5:
+    case 4:
       aster();
       break;
-    case 6:
+    case 5:
       mandarin();
       break;
   }
@@ -294,11 +275,10 @@ void startControlServer() {
               animations: [
                 { text: 'Fire', value: 0 },
                 { text: 'Rainbow', value: 1 },
-                { text: 'Firefly', value: 2 },
-                { text: 'Water', value: 3 },
-                { text: 'Matrix Rain', value: 4 },
-                { text: 'Aster', value: 5 },
-                { text: 'Mandarin', value: 6 }
+                { text: 'Water', value: 2 },
+                { text: 'Matrix Rain', value: 3 },
+                { text: 'Aster', value: 4 },
+                { text: 'Mandarin', value: 5 }
               ]
             },
             methods: {
